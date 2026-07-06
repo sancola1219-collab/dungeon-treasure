@@ -48,6 +48,8 @@ export class Player {
   constructor({ x = 0, z = 0, yaw = 0 } = {}) {
     this.x = x;
     this.z = z;
+    this.prevX = x; // 上一幀邏輯位置（供渲染插值）
+    this.prevZ = z;
     this.yaw = yaw;
     this.pitch = 0;
     this.radius = PLAYER_RADIUS;
@@ -82,6 +84,8 @@ export class Player {
   }
 
   update(dt, actions, world) {
+    this.prevX = this.x; // 移動前記錄，渲染側用 alpha 在 prev→current 間插值
+    this.prevZ = this.z;
     if (this.iframes > 0) this.iframes = Math.max(0, this.iframes - dt);
     if (this.poison > 0) {
       this.poison = Math.max(0, this.poison - dt);

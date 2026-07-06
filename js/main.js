@@ -1086,7 +1086,7 @@ function boot() {
   }
 
   function render() {
-    renderer.updateCamera(player);
+    renderer.updateCamera(player, loop.alpha);
     renderer.syncProjectiles(projectiles.list);
     renderer.render();
   }

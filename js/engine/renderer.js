@@ -661,34 +661,37 @@ export class Renderer {
     this.shake(0.16);
   }
 
-  updateCamera(player) {
-    // 視覺平滑：邏輯 60Hz、螢幕可能 60/90/120Hz——直接取邏輯位置會有
-    // 週期性微步進（走路抖動）。相機位置在渲染側做指數平滑（純裝飾，
-    // 不回寫遊戲狀態；收斂 ~45ms，體感無延遲）
-    const now = performance.now();
-    const fdt = Math.min(0.05, (now - (this._lastFrameT || now)) / 1000);
-    this._lastFrameT = now;
-    if (!this._smooth) this._smooth = { x: player.x, z: player.z };
-    const k = 1 - Math.exp(-fdt * 24);
-    this._smooth.x += (player.x - this._smooth.x) * k;
-    this._smooth.z += (player.z - this._smooth.z) * k;
+  // 渲染插值：邏輯 60Hz、螢幕可能 60/90/120Hz——直接取邏輯位置會有週期性
+  // 微步進（走路抖動）。改用「上一幀邏輯位置 prev → 當前 current」依 alpha
+  // 線性插值，相機永遠在兩個已知合法位置之間平順移動，數學上消除 stutter。
+  // alpha = 距下一次 update 的進度（由 GameLoop 提供）。純裝飾，不回寫狀態。
+  updateCamera(player, alpha = 1) {
+    let px = player.prevX ?? player.x;
+    let pz = player.prevZ ?? player.z;
+    // 瞬移（讀檔/換章/spawn）不插值，直接用當前位置，避免一幀高速滑動
+    if (Math.hypot(player.x - px, player.z - pz) > 1) {
+      px = player.x;
+      pz = player.z;
+    }
+    const cx = px + (player.x - px) * alpha;
+    const cz = pz + (player.z - pz) * alpha;
 
-    const moved = this._lastCam
-      ? Math.hypot(this._smooth.x - this._lastCam[0], this._smooth.z - this._lastCam[1])
-      : 0;
-    this._lastCam = [this._smooth.x, this._smooth.z];
+    // 步伐相位仍推進（供武器微晃用），但相機頭部搖晃(head bob)一律關閉——
+    // 走路時的相機上下擺與左右傾正是「走路抖動/暈」的來源，穩定優先
+    const moved = this._lastCam ? Math.hypot(cx - this._lastCam[0], cz - this._lastCam[1]) : 0;
+    this._lastCam = [cx, cz];
     if (moved > 0.0005) this._bobPhase += Math.min(moved, 0.12) * 22;
-    const bob = Math.sin(this._bobPhase) * 0.014;
+
     let sx = 0;
     let sy = 0;
     if (this._shake > 0.001) {
       sx = (Math.random() - 0.5) * this._shake;
       sy = (Math.random() - 0.5) * this._shake;
     }
-    this.camera.position.set(this._smooth.x + sx, player.eyeHeight + bob + sy, this._smooth.z);
+    this.camera.position.set(cx + sx, player.eyeHeight + sy, cz);
     this.camera.rotation.y = player.yaw;
     this.camera.rotation.x = player.pitch;
-    this.camera.rotation.z = Math.sin(this._bobPhase * 0.5) * 0.003;
+    this.camera.rotation.z = 0;
   }
 
   resize(w, h) {

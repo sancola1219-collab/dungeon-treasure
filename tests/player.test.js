@@ -39,6 +39,16 @@ test('斜向撞牆沿牆滑行', () => {
   assert.ok(p.x < 4.9, `x=${p.x} 應沿牆滑動減少`);
 });
 
+test('渲染插值：update 前記錄 prevX/prevZ（移動前的位置）', () => {
+  const world = new World(ROOM);
+  const p = new Player({ x: 5, z: 5 });
+  assert.equal(p.prevX, 5);
+  assert.equal(p.prevZ, 5);
+  p.update(1 / 60, { ...IDLE, moveZ: -1 }, world); // 前進一步
+  assert.equal(p.prevZ, 5, 'prevZ 應保留移動前的位置');
+  assert.ok(p.z < 5 && p.z > 4.9, `z=${p.z} 應前進約 0.053`);
+});
+
 test('走路與跑步速度', () => {
   const world = new World(ROOM);
   const walk = new Player({ x: 5, z: 8, yaw: 0 });

@@ -3,6 +3,15 @@ import assert from 'node:assert/strict';
 import { GameLoop } from '../js/engine/loop.js';
 import { mulberry32 } from '../js/engine/rng.js';
 
+test('渲染插值：tick 後 alpha = accumulator / step', () => {
+  const loop = new GameLoop({ update: () => {} });
+  loop.tick(0);
+  loop.tick(0.025); // 跨 1.5 個 step → 1 update，剩餘 accumulator ≈ 半個 step
+  assert.ok(Math.abs(loop.alpha - 0.5) < 0.02, `alpha=${loop.alpha} 應約 0.5`);
+  loop.tick(0.025 + 1 / 60); // 再補滿一個 step → alpha 回到約 0.5
+  assert.ok(loop.alpha >= 0 && loop.alpha < 1, `alpha=${loop.alpha} 應在 [0,1)`);
+});
+
 test('固定時步：0.1 秒累積 6 次更新', () => {
   let count = 0;
   const loop = new GameLoop({ update: () => count++ });
