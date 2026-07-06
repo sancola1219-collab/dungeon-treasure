@@ -250,7 +250,7 @@ function boot() {
       document.body.classList.add('touch');
       $('touch-ui').style.display = 'block';
     }
-    hintFlash(LEVEL.objective || '活下去', 4.5);
+    hintFlash((isTouchOnly ? '點右下「物品」鈕用道具．' : '按 Tab 開物品欄用道具．') + (LEVEL.objective || '活下去'), 6);
     if (!input.dragMode && canvas.requestPointerLock) {
       const p = canvas.requestPointerLock();
       if (p && p.catch) p.catch(() => {});
