@@ -9,7 +9,6 @@ export class GameLoop {
     this.maxFrameTime = maxFrameTime;
     this.maxUpdatesPerTick = maxUpdatesPerTick;
     this.accumulator = 0;
-    this.alpha = 0; // 渲染插值係數：距下一次 update 的進度 0~1（消除固定時步 stutter）
     this.lastTime = null;
     this.running = false;
     this._raf = 0;
@@ -37,7 +36,6 @@ export class GameLoop {
         break;
       }
     }
-    this.alpha = this.accumulator / this.step; // 供渲染側在 prev→current 之間插值
     return updates;
   }
 
