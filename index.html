@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>地牢尋寶：沉默王陵</title>
+<link rel="stylesheet" href="./css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app"></div>
+<div id="hud">
+  <div id="crosshair"></div>
+  <div id="hitmarker">✕</div>
+  <div id="hint"></div>
+  <div id="ammo"></div>
+  <canvas id="ecg" width="200" height="64"></canvas>
+  <canvas id="minimap" width="150" height="150"></canvas>
+  <div id="treasure"></div>
+  <div id="countdown" style="display:none"></div>
+</div>
+<div id="docread" class="overlay" style="display:none">
+  <div class="panel story-panel">
+    <h2 id="doc-title"></h2>
+    <p id="doc-text"></p>
+    <p class="tip">按 E 或點擊關閉</p>
+  </div>
+</div>
+<div id="dialog" style="display:none">
+  <div id="dialog-name"></div>
+  <p id="dialog-text"></p>
+  <p class="tip">按 E 或點擊繼續</p>
+</div>
+<div id="chapend" class="overlay" style="display:none">
+  <div class="panel">
+    <h1 id="chapend-title">第一章　完</h1>
+    <div id="chapend-rank"></div>
+    <p id="chapend-stats"></p>
+    <p class="tip" id="chapend-note" style="max-width:560px;line-height:2"></p>
+    <div class="menu-col">
+      <button id="btn-nextchap">前往下一章</button>
+      <button id="btn-chapend">回到標題</button>
+    </div>
+  </div>
+</div>
+<div id="bigmap" class="overlay" style="display:none">
+  <div class="panel">
+    <h2>地圖</h2>
+    <canvas id="bigmap-canvas" width="520" height="420"></canvas>
+    <p class="tip no-touch">M / Tab 關閉</p>
+    <div class="synth-row touch-only">
+      <button class="synth-btn" data-code="KeyM">關閉</button>
+    </div>
+  </div>
+</div>
+<div id="vignette"></div>
+<div id="fx-vignette"></div>
+<div id="grain"></div>
+<div id="buildtag">v1.0.0</div>
+<div id="touch-ui" style="display:none">
+  <div id="look-zone"></div>
+  <div id="stick"><div id="stick-knob"></div></div>
+  <div id="tbtn-pause" class="tbtn" data-code="Escape">⏸</div>
+  <div id="tcluster">
+    <div class="tbtn" data-code="KeyQ">武器</div>
+    <div class="tbtn" data-code="KeyR">裝填</div>
+    <div class="tbtn" data-code="KeyE">互動</div>
+    <div class="tbtn tfire" data-mouse="0">射擊</div>
+  </div>
+  <div id="tbtn-inv" class="tbtn" data-code="Tab">物品</div>
+  <div id="tbtn-map" class="tbtn" data-code="KeyM">地圖</div>
+</div>
+<div id="inv" class="overlay" style="display:none">
+  <div class="panel inv-panel">
+    <h2>物品欄</h2>
+    <div id="inv-grid"></div>
+    <div id="inv-desc"></div>
+    <p class="tip no-touch">WASD/方向鍵 移動．E 使用．F 選取＋組合．G 丟棄．Tab 關閉</p>
+    <div class="synth-row touch-only">
+      <button class="synth-btn" data-code="KeyE">使用</button>
+      <button class="synth-btn" data-code="KeyF">組合</button>
+      <button class="synth-btn" data-code="KeyG">丟棄</button>
+      <button class="synth-btn" data-code="Tab">關閉</button>
+    </div>
+  </div>
+</div>
+<div id="typewriter" class="overlay" style="display:none">
+  <div class="panel">
+    <h2>打字機</h2>
+    <p id="tw-info"></p>
+    <p class="tip no-touch">E 存檔．R 讀取．Tab 離開</p>
+    <div class="synth-row touch-only">
+      <button class="synth-btn" data-code="KeyE">存檔</button>
+      <button class="synth-btn" data-code="KeyR">讀取</button>
+      <button class="synth-btn" data-code="Tab">離開</button>
+    </div>
+  </div>
+</div>
+<div id="death" class="overlay" style="display:none">
+  <div class="panel">
+    <h1 class="death-title">你死了</h1>
+    <p class="tip no-touch" id="death-tip">R 讀取存檔．Enter 重新開始</p>
+    <div class="synth-row touch-only">
+      <button class="synth-btn" data-code="KeyR">讀取存檔</button>
+      <button class="synth-btn" data-code="Enter">重新開始</button>
+    </div>
+  </div>
+</div>
+<div id="title" class="overlay" style="display:none">
+  <div class="panel">
+    <h1>地牢尋寶</h1>
+    <p>沉默王陵</p>
+    <div class="menu-col">
+      <button id="btn-start">開始遊戲</button>
+      <button id="btn-continue">繼續遊戲</button>
+      <button id="btn-help">操作說明</button>
+    </div>
+    <p class="tip" id="title-tip">傳說裡，進去的人沒有出來過</p>
+  </div>
+</div>
+<div id="difficulty" class="overlay" style="display:none">
+  <div class="panel">
+    <h2>選擇難度</h2>
+    <div class="menu-col">
+      <button class="btn-diff" data-diff="easy">輕鬆　　彈藥較多，敵人較弱</button>
+      <button class="btn-diff" data-diff="standard">標準　　經典生存恐怖體驗</button>
+      <button class="btn-diff" data-diff="hard">艱難　　彈藥稀缺，步步驚心</button>
+    </div>
+  </div>
+</div>
+<div id="story" class="overlay" style="display:none">
+  <div class="panel story-panel">
+    <h2 id="story-title"></h2>
+    <p id="story-text"></p>
+    <p class="tip">點擊或按 E 繼續．Esc 跳過</p>
+  </div>
+</div>
+<div id="help" class="overlay" style="display:none">
+  <div class="panel">
+    <h2>操作說明</h2>
+    <p class="tip" style="line-height:2">WASD 移動．滑鼠 視角．Shift 奔跑<br>左鍵 攻擊/射擊（衝鋒槍/噴火器按住連發）<br>E 互動．R 裝填．Q/數字鍵 切換武器<br>Tab 物品欄．M 地圖．Esc 暫停<br>手機：左搖桿移動（推滿奔跑）．滑動畫面轉視角</p>
+    <div class="menu-col"><button id="btn-help-back">返回</button></div>
+  </div>
+</div>
+<div id="loading" class="overlay">
+  <div class="panel">
+    <h1>地牢尋寶</h1>
+    <p>黑鴉市事件</p>
+    <p class="tip">載入中…</p>
+  </div>
+</div>
+<div id="pause" class="overlay" style="display:none">
+  <div class="panel">
+    <h1>暫停</h1>
+    <button id="resume">繼續遊戲</button>
+    <p class="tip" id="pause-tip">點擊畫面鎖定視角．WASD 移動．Shift 奔跑．E 互動．Esc 暫停</p>
+  </div>
+</div>
+<div id="error" class="overlay" style="display:none">
+  <div class="panel">
+    <h1>無法啟動</h1>
+    <p>你的瀏覽器不支援 WebGL，無法執行本遊戲。</p>
+  </div>
+</div>
+<script type="module" src="./js/main.js?v=1" id="zw-entry"></script>
+<script>
+// 載入看門狗（傳統 script，舊瀏覽器也會執行）：
+// module 匯入鏈（含 three CDN）任一環節失敗時 boot() 不會跑，
+// 若無此段玩家只會看到永遠的「載入中…」。
+(function () {
+  function fail(msg) {
+    var loading = document.getElementById('loading');
+    if (window.__zw || !loading || loading.style.display === 'none') return;
+    loading.querySelector('.tip').textContent = msg;
+  }
+  document.getElementById('zw-entry').addEventListener('error', function () {
+    fail('載入失敗：無法取得遊戲資源，請檢查網路後重新整理');
+  });
+  window.addEventListener('unhandledrejection', function () {
+    fail('載入失敗：請重新整理頁面');
+  });
+  setTimeout(function () {
+    fail('載入逾時：請檢查網路，或更新瀏覽器（需支援 import map，如 Safari 16.4+、近代 Chrome/Edge/Firefox）後重試');
+  }, 15000);
+})();
+</script>
+</body>
+</html>

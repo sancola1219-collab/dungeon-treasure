@@ -1,0 +1,142 @@
+// 最終章〈王陵心臟〉：下層寶庫與王棺大廳——不朽王 Boss、王冠、陵墓塌陷逃生。
+export const DUNGEON2 = {
+  id: 'dungeon2',
+  name: '最終章：王陵心臟',
+  next: null,
+  exitNeeds: 'bossdead',
+  exitHint: '崩塌迴廊的落石封住了去路——只要「王」還在王座上，這座陵就不會放人走',
+  boss: 'king',
+  countdown: 150, // 王倒下後陵墓開始塌陷
+  spawn: { x: 2.5, z: 2.5, yaw: -Math.PI / 2 },
+  lockNames: { bossdead: '王陵崩解', chapterExit: '地表裂口' },
+  story: [
+    '下行的石階比想像中長。\n\n江無涯數到第兩百階就放棄了。火把的光圈外，黑暗濃得像水，他總覺得台階兩側有東西跟著他往下走——保持著禮貌的距離，像送葬的隊伍。',
+    '然後石階到底，眼前豁然開朗。\n\n黃金。\n\n整個下層是一座被火盆照亮的地下宮殿，殉葬的金器沿著牆堆到天花板。祖父說得沒錯——這裡的財寶夠還十輩子的債。\n\n可是宮殿正中央的王棺大廳裡，那頂王冠端端正正地擺在王座上。\n\n「觸王冠者，代王守陵。」',
+    '江無涯把繩索在腰上纏緊了一圈。\n\n計畫很簡單：拿夠金子、別碰王冠、活著出去。\n\n計畫失敗得也很簡單——當他撿起第一袋金幣時，王棺大廳的方向，傳來了石棺蓋滑開的聲音。',
+  ],
+  endingText: '裂口在身後轟然閉合，沉默王陵連同它的王一起沉回了山的肚子裡。江無涯躺在草地上數了很久的星星，才發現王冠不知什麼時候勾在了他的背包上。「拿多少，還多少。」他想了想，朝山谷深深鞠了一躬——債，改天再還。',
+  objective: '搜刮寶庫，擊敗不朽王，在陵墓塌陷前逃出去',
+  rooms: [
+    { id: 'anteroom', name: '下層前廳', x: 0, z: 0, w: 5, d: 5, h: 3.4, floor: 'stone', walls: 'stone',
+      light: { x: 2.5, y: 3, z: 2.5, color: 0xffc080, intensity: 24 } },
+    { id: 'mirrorway', name: '鏡水道', x: 5, z: 1, w: 12, d: 3, h: 3, floor: 'tile', walls: 'stone',
+      light: { x: 11, y: 2.6, z: 2.5, color: 0x88aacc, intensity: 16, flicker: true } },
+    { id: 'vaulteast', name: '寶庫・東', x: 5, z: 4, w: 7, d: 8, h: 3.8, floor: 'stone', walls: 'stone',
+      light: { x: 8.5, y: 3.4, z: 8, color: 0xffb060, intensity: 26, flicker: true } },
+    { id: 'vaultwest', name: '寶庫・西', x: 12, z: 4, w: 7, d: 8, h: 3.8, floor: 'stone', walls: 'stone',
+      light: { x: 15.5, y: 3.4, z: 8, color: 0xffb060, intensity: 26, flicker: true } },
+    { id: 'thronefore', name: '王座前廳', x: 17, z: 1, w: 6, d: 3, h: 3.6, floor: 'stone', walls: 'plaster',
+      light: { x: 20, y: 3.2, z: 2.5, color: 0xffd9a0, intensity: 22 } },
+    { id: 'cofferhall', name: '王棺大廳', x: 12, z: 12, w: 14, d: 10, h: 5.5, floor: 'stone', walls: 'stone',
+      light: { x: 19, y: 5, z: 17, color: 0xcc7733, intensity: 40, flicker: true } },
+    { id: 'collapseway', name: '崩塌迴廊', x: 4, z: 12, w: 8, d: 4, h: 3, floor: 'stone', walls: 'stone',
+      light: { x: 8, y: 2.6, z: 14, color: 0xff8040, intensity: 14, flicker: true } },
+    { id: 'fissure', name: '地表裂口', x: 0, z: 12, w: 4, d: 6, h: 4.5, floor: 'stone', walls: 'stone',
+      light: { x: 2, y: 4, z: 15, color: 0xaaccee, intensity: 30 } }, // 天光
+  ],
+  doors: [
+    { id: 'g2-ante-mirror', from: 'anteroom', to: 'mirrorway', axis: 'z', at: [5, 2.5], width: 1.4, height: 2.4, lock: null },
+    { id: 'g2-mirror-veast', from: 'mirrorway', to: 'vaulteast', axis: 'x', at: [8.5, 4], width: 1.3, height: 2.2, lock: null },
+    { id: 'g2-mirror-vwest', from: 'mirrorway', to: 'vaultwest', axis: 'x', at: [15.5, 4], width: 1.3, height: 2.2, lock: null },
+    { id: 'g2-mirror-throne', from: 'mirrorway', to: 'thronefore', axis: 'z', at: [17, 2.5], width: 1.4, height: 2.4, lock: null },
+    { id: 'g2-veast-vwest', from: 'vaulteast', to: 'vaultwest', axis: 'z', at: [12, 8], width: 1.2, height: 2.2, lock: null },
+    { id: 'g2-vwest-coffer', from: 'vaultwest', to: 'cofferhall', axis: 'x', at: [15.5, 12], width: 1.6, height: 2.8, lock: null },
+    { id: 'g2-coffer-collapse', from: 'cofferhall', to: 'collapseway', axis: 'z', at: [12, 14], width: 1.4, height: 2.4, lock: 'bossdead' },
+    { id: 'g2-collapse-fissure', from: 'collapseway', to: 'fissure', axis: 'z', at: [4, 14], width: 1.3, height: 2.3, lock: null },
+    { id: 'g2-exit', from: 'fissure', to: null, axis: 'x', at: [2, 12], width: 1.5, height: 2.5, lock: 'chapterExit' },
+  ],
+  props: [
+    { room: 'anteroom', type: 'crate', x: 4.2, z: 0.8, solid: 0.4 },
+    { room: 'anteroom', type: 'papers', x: 1.5, z: 4 },
+    { room: 'mirrorway', type: 'blood', x: 10, z: 2.5 },
+    { room: 'mirrorway', type: 'pipe', x: 11, z: 1.4, len: 11, y: 2.6 },
+    // 寶庫：金器堆（桶＋箱密集陣）
+    { room: 'vaulteast', type: 'barrel', x: 6, z: 6, solid: 0.35 },
+    { room: 'vaulteast', type: 'barrel', x: 6.9, z: 6.3, solid: 0.35 },
+    { room: 'vaulteast', type: 'barrel', x: 6.4, z: 7.2, solid: 0.35 },
+    { room: 'vaulteast', type: 'crate', x: 10.5, z: 10.5, solid: 0.4 },
+    { room: 'vaulteast', type: 'crate', x: 9.6, z: 10.9, solid: 0.4 },
+    { room: 'vaulteast', type: 'shelf', x: 5.35, z: 9.5, rot: Math.PI / 2, solid: 0.28 },
+    { room: 'vaultwest', type: 'barrel', x: 17.5, z: 5.5, solid: 0.35 },
+    { room: 'vaultwest', type: 'barrel', x: 18.2, z: 6, solid: 0.35 },
+    { room: 'vaultwest', type: 'crate', x: 13, z: 10.5, solid: 0.4 },
+    { room: 'vaultwest', type: 'shelf', x: 18.65, z: 9.5, rot: -Math.PI / 2, solid: 0.28 },
+    { room: 'vaultwest', type: 'bodybag', x: 14, z: 6.5, rot: 1.4 },
+    { room: 'vaultwest', type: 'blood', x: 14.3, z: 7.1 },
+    { room: 'thronefore', type: 'table', x: 20, z: 1.8, solid: 0.5 },
+    { room: 'thronefore', type: 'papers', x: 21.5, z: 3 },
+    // 王棺大廳：石柱掩體＋王座
+    { room: 'cofferhall', type: 'crate', x: 15, z: 15, solid: 0.45 },
+    { room: 'cofferhall', type: 'crate', x: 23, z: 15, solid: 0.45 },
+    { room: 'cofferhall', type: 'crate', x: 15, z: 19, solid: 0.45 },
+    { room: 'cofferhall', type: 'crate', x: 23, z: 19, solid: 0.45 },
+    { room: 'cofferhall', type: 'table', x: 25, z: 17, solid: 0.5 }, // 王座台
+    { room: 'cofferhall', type: 'blood', x: 19, z: 16 },
+    { room: 'cofferhall', type: 'blood', x: 17.5, z: 19.5 },
+    { room: 'cofferhall', type: 'pipe', x: 19, z: 12.6, len: 13, y: 5.2 },
+    { room: 'collapseway', type: 'barrel', x: 10.5, z: 15.3, solid: 0.35 },
+    { room: 'collapseway', type: 'blood', x: 7, z: 13.5 },
+    { room: 'fissure', type: 'crate', x: 3.2, z: 17, solid: 0.4 },
+  ],
+  documents: [
+    {
+      id: 'g2-doc-priest', title: '祭司的懺悔（竹簡）', x: 20.3, z: 2,
+      text: '（竹簡上的古文旁有前人的鉛筆翻譯）\n\n「王駕崩前七日，命我等以秘法縛其魂於金身。王曰：朕之國可亡，朕之陵不可空。」\n\n「吾等從命。吾等有罪。三百殉者非自願，守陵人非自願，吾亦非自願。」\n\n「後來者若見此簡：王懼火盆熄滅。切記。」',
+    },
+    {
+      id: 'g2-doc-vault', title: '寶庫清點木牌', x: 6, z: 5,
+      text: '（一塊蟲蛀的木牌，字跡還能辨認）\n\n東庫：金器三千二百件。\n西庫：玉器八百件、兵器四百件。\n王棺大廳：王冠一頂。\n\n木牌背面被人用刀刻了四個字：\n\n「冠不可取」',
+    },
+    {
+      id: 'g2-doc-lastwords', title: '半張沾血的筆記', x: 14.3, z: 6.8,
+      text: '……我們拿了王冠。是阿豪拿的，不是我。\n\n可是那東西不管是誰拿的。石棺開了之後它只認一件事：冠在誰的方向，它就往哪走。\n\n阿豪把王冠丟了。沒有用。\n\n它要的不是冠。它要的是「代替」。\n\n（筆記到這裡被撕斷）',
+    },
+  ],
+  npcs: [],
+  triggers: [
+    { id: 'g2-t-mirror', room: 'mirrorway', text: '水道的積水平得像鏡子。倒影裡，你身後的黑暗比實際更深。', sound: 'groan' },
+    { id: 'g2-t-vault', room: 'vaulteast', text: '黃金。滿牆的黃金。遠處傳來石頭摩擦石頭的聲音——石棺蓋。', sound: 'groan', shake: 0.08 },
+    { id: 'g2-t-coffer', room: 'cofferhall', text: '王座上的王冠泛著暗金色的光。石棺——是空的。', sound: 'groan', alert: true, shake: 0.14 },
+    { id: 'g2-t-fissure', room: 'fissure', text: '天光！裂口就在頭頂——爬上去就是活路！' },
+  ],
+  entities: {
+    pickups: [
+      { id: 'g2-p-ammo1', item: 'handgun_ammo', count: 15, x: 1, z: 1 },
+      { id: 'g2-p-shells1', item: 'shotgun_shells', count: 7, x: 4, z: 4.2 },
+      { id: 'g2-p-coin1', item: 'treasure_coin', count: 1, x: 6.5, z: 5 },
+      { id: 'g2-p-coin2', item: 'treasure_coin', count: 1, x: 10.8, z: 9.8 },
+      { id: 'g2-p-gem1', item: 'treasure_gem', count: 1, x: 6, z: 10.8 },
+      { id: 'g2-p-idol1', item: 'treasure_idol', count: 1, x: 9, z: 11.2 },
+      { id: 'g2-p-magnum', item: 'magnum_weapon', count: 1, x: 17.8, z: 10.8 }, // 陪葬的獵象槍
+      { id: 'g2-p-magammo1', item: 'magnum_ammo', count: 6, x: 18.3, z: 10.4 },
+      { id: 'g2-p-coin3', item: 'treasure_coin', count: 1, x: 13.5, z: 5.5 },
+      { id: 'g2-p-gem2', item: 'treasure_gem', count: 1, x: 17.8, z: 7.5 },
+      { id: 'g2-p-idol2', item: 'treasure_idol', count: 1, x: 13.2, z: 11 },
+      { id: 'g2-p-spray1', item: 'first_aid_spray', count: 1, x: 21.5, z: 1.5 },
+      { id: 'g2-p-herb1', item: 'green_herb', count: 1, x: 18.5, z: 1.5 },
+      { id: 'g2-p-blue1', item: 'blue_herb', count: 1, x: 10, z: 3.2 },
+      { id: 'g2-p-crown', item: 'treasure_crown', count: 1, x: 25.2, z: 17.3 }, // ★ 王座上的王冠——王守著它
+      { id: 'g2-p-magammo2', item: 'magnum_ammo', count: 6, x: 13.5, z: 20.5 },
+      { id: 'g2-p-shells2', item: 'shotgun_shells', count: 7, x: 22, z: 20.8 },
+      { id: 'g2-p-herb2', item: 'green_herb', count: 1, x: 9.5, z: 13 },
+      { id: 'g2-p-red1', item: 'red_herb', count: 1, x: 10.8, z: 15.5 },
+    ],
+    enemies: [
+      { id: 'g2-e-z1', type: 'zombie', x: 12, z: 2.2 },
+      { id: 'g2-e-creeper1', type: 'creeper', x: 7, z: 9 },   // 寶庫的守財藤
+      { id: 'g2-e-bloater1', type: 'bloater', x: 10, z: 7 },
+      { id: 'g2-e-hunter1', type: 'hunter', x: 16, z: 9 },    // 西庫獵手
+      { id: 'g2-e-z2', type: 'zombie', x: 14, z: 8.5 },
+      { id: 'g2-e-lurker1', type: 'lurker', x: 20.5, z: 2 },  // 王座前廳天花板
+      { id: 'g2-e-z3', type: 'zombie', x: 17, z: 15 },
+      { id: 'g2-e-z4', type: 'zombie', x: 21, z: 18.5 },
+      { id: 'g2-e-bloater2', type: 'bloater', x: 8, z: 14.5 },
+      { id: 'king', type: 'prime', x: 21, z: 17 },            // ★ 不朽王（守著王冠）
+    ],
+    typewriters: [
+      { id: 'g2-tw-ante', x: 0.8, z: 0.8 },
+      { id: 'g2-tw-throne', x: 22.2, z: 1.2 },
+    ],
+  },
+  start: { weapons: [{ id: 'handgun', rounds: 15 }, { id: 'shotgun', rounds: 7 }], items: [] },
+};
