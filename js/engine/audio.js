@@ -31,8 +31,8 @@ export class AudioEngine {
     this._musicIntensity = Math.max(0, Math.min(1, v));
     if (this._droneGain && this.ctx) {
       const t = this.ctx.currentTime;
-      this._droneGain.gain.linearRampToValueAtTime(0.05 + this._musicIntensity * 0.05, t + 1.2);
-      this._pulseGain.gain.linearRampToValueAtTime(this._musicIntensity * 0.14, t + 0.8);
+      this._droneGain.gain.linearRampToValueAtTime(0.11 + this._musicIntensity * 0.08, t + 1.2);
+      this._pulseGain.gain.linearRampToValueAtTime(this._musicIntensity * 0.2, t + 0.8);
     }
   }
 
@@ -41,7 +41,7 @@ export class AudioEngine {
     const t = this.ctx.currentTime;
     // 層 1：雙鋸齒微失諧 drone（不和諧小二度），慢速濾波起伏
     this._droneGain = this.ctx.createGain();
-    this._droneGain.gain.value = 0.05;
+    this._droneGain.gain.value = 0.11; // 探索時就有明顯的地底低鳴
     const droneFilter = this.ctx.createBiquadFilter();
     droneFilter.type = 'lowpass';
     droneFilter.frequency.value = 160;
@@ -87,19 +87,19 @@ export class AudioEngine {
       if (!this.ctx || this.ctx.state !== 'running') return;
       const roll = Math.random();
       const dense = this._musicIntensity > 0.5;
-      if (roll < (dense ? 0.55 : 0.3)) {
-        // 小二度音對敲擊（鋼琴弦悶擊感）
+      if (roll < (dense ? 0.7 : 0.5)) {
+        // 小二度音對敲擊（石室裡的悶擊回聲）
         const base = [110, 147, 196][Math.floor(Math.random() * 3)];
-        this._tone({ type: 'triangle', from: base, vol: 0.05, dur: 1.6 });
-        this._tone({ type: 'triangle', from: base * 1.06, vol: 0.04, dur: 1.8, when: 0.04 });
-      } else if (roll < 0.45) {
-        // 高頻幽鳴滑音
-        this._tone({ type: 'sine', from: 1450 + Math.random() * 600, to: 1200, vol: 0.016, dur: 3.5 });
-      } else if (roll < 0.55) {
-        // 遠處低沉悶響
-        this._burst({ freq: 120, vol: 0.12, dur: 0.9 });
+        this._tone({ type: 'triangle', from: base, vol: 0.08, dur: 1.8 });
+        this._tone({ type: 'triangle', from: base * 1.06, vol: 0.06, dur: 2.0, when: 0.04 });
+      } else if (roll < 0.72) {
+        // 高頻幽鳴滑音（風穿過墓道）
+        this._tone({ type: 'sine', from: 1450 + Math.random() * 600, to: 1200, vol: 0.024, dur: 3.5 });
+      } else {
+        // 遠處低沉悶響（石棺、落石）
+        this._burst({ freq: 110, vol: 0.18, dur: 1.1 });
       }
-    }, 4200);
+    }, 3200);
   }
 
   play(name) {

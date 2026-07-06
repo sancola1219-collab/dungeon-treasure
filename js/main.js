@@ -213,6 +213,10 @@ function boot() {
     $('story').style.display = m === 'story' ? 'flex' : 'none';
     $('help').style.display = m === 'help' ? 'flex' : 'none';
     $('pause').style.display = m === 'paused' ? 'flex' : 'none';
+    // 觸控層（含覆蓋全螢幕的視角滑動區）只在「遊戲進行中」顯示，
+    // 否則會攔截章末/暫停/選單畫面上的按鈕點擊（手機卡住的主因）
+    const tui = $('touch-ui');
+    if (tui && isTouchOnly) tui.style.display = m === 'play' ? 'block' : 'none';
     if (m === 'paused') {
       $('pause-tip').textContent = isTouchOnly
         ? '左下搖桿移動（推滿奔跑）．滑動畫面轉視角．右下按鈕互動'
@@ -1118,6 +1122,7 @@ function boot() {
   window.__zw = {
     world,
     player,
+    audio,
     input,
     loop,
     renderer,
